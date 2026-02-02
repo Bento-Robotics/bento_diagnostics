@@ -14,6 +14,7 @@ import rclpy
 from diagnostic_msgs.msg._diagnostic_status import Metaclass_DiagnosticStatus
 from rcl_interfaces.msg import Log
 from rclpy.executors import ExternalShutdownException
+import rclpy.qos
 
 """Watches the standard assortments of ROS nodes running on bento robots
 for known irregularities and faults and publishes them as diagnostic messages with diagnostic_updater. 
@@ -40,7 +41,7 @@ class ErrorMessage:
 
 diagnostic_components: Dict[str, ErrorMessage] = {}
 
-
+# TODO: make this thing quicker - it builds up a queue of messages when a spam comes in
 def log_callback(msg: Log):
     for component in diagnostic_components.values():
         counter = 0
@@ -110,8 +111,13 @@ def main(args=None):
     updater.broadcast(diagnostic_msgs.msg.DiagnosticStatus.OK,
                       'Initializing Diagnostics...')
 
+    qos = rclpy.qos.QoSProfile(
+        reliability=rclpy.qos.ReliabilityPolicy.RELIABLE,
+        durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+        lifespan=rclpy.qos.Duration(seconds=10),
+        history=rclpy.qos.HistoryPolicy.KEEP_ALL)
     node.create_subscription(Log, "/rosout",
-                             log_callback, 10)
+                             log_callback, qos)
 
     # The state of the node just changed, we can force an immediate update.
     updater.force_update()
