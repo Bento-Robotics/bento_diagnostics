@@ -6,7 +6,7 @@ package_name = 'bento_diagnostics'
 
 setup(
     name=package_name,
-    version='0.1.0',
+    version='1.0.0',
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -15,7 +15,7 @@ setup(
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
         (os.path.join('share', package_name, 'resource'), glob(os.path.join('resource', '*.[pxy][yma]*'))),
     ],
-    install_requires=['setuptools', 'launch'],
+    install_requires=['setuptools', 'launch', 'pyyaml'],
     zip_safe=True,
     maintainer='Sam (snaens) Pelz',
     maintainer_email='snaens@snaens.net',
